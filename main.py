@@ -8,10 +8,13 @@ class Main(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
+        self.resize(500, 500)
+
 
     def initUI(self):
-        self.setWindowTitle('Image')
-        self.setGeometry(500, 200, 500, 500)
+        self.setWindowTitle('eBook')
+        # self.setGeometry(500, 200)
+
 
 
 class Settings(Main, QWidget):
@@ -22,6 +25,15 @@ class Settings(Main, QWidget):
         self.show()
 
         settings_menu = QMenu(self)
+        # сделать меню(выпадающий список)
+
+
+class Title(Main, QWidget):
+    pass
+
+
+class MoreFunction(Main, QWidget):
+    pass
 
 
 if __name__ == '__main__':
