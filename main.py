@@ -1,4 +1,5 @@
 import sys
+import io
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -11,14 +12,15 @@ class Main(QWidget):
         self.resize(500, 500)
         self.setWindowTitle('eBook')
         self.library = list()
-        self.library_file_path = list()
+        # self.library_file_path = list()
 
     def initUI(self):
         self.setWindowTitle('eBook')
         # self.setGeometry(500, 200)
+        e = Buttons()
 
 
-class Buttons(Main, QWidget):
+class Buttons(Main):
     def initUI(self):
         self.settings = QPushButton(self)
         self.settings.setIcon(QIcon('settings.png'))
@@ -35,10 +37,15 @@ class Buttons(Main, QWidget):
         self.title.move(200, 0)
         self.title.setText("fz")
 
-        self.text_lable = QLabel(self)
+        self.text_lable = QTextEdit(self)
         self.text_lable.setFixedSize(500, 480)
-        self.text_lable.move(0, 20)
-        self.text_lable.setText("djgkgjkdjgkdx")
+        self.text_lable.move(0, 30)
+
+
+        #
+        # self.text_lable.setText("djgkgjk\ndjgkdx")
+        self.text_lable.setReadOnly(True)
+        # self.statusBar().showMessage("Указанный файл не существует")
 
         self.show()
 
@@ -103,7 +110,7 @@ class Buttons(Main, QWidget):
             lambda pos: context_menu_settings.exec_(self.settings.mapToGlobal(pos)))
 
     def action_book_description(self):
-        # self.three_points.setStyleSheet("background-color: red;")
+
         pass
 
     def action_table_of_contents(self):
@@ -124,22 +131,19 @@ class Buttons(Main, QWidget):
             self, "file", "choose book",
             tuple(self.library), 1, False)
 
-        # далее нерабочая фигня
         if ok_pressed:
             try:
-                f = open(book_name)
-                a = f.readlines()
-                f.close()
-                self.text_lable.setText(a)
-            except e:
+                with io.open(book_name, encoding='utf-8') as file:
+                    for i in file:
+                        self.text_lable.append(i)
+            except Exception as e:
                 print(e)
 
     def action_file_selection(self):
         fname = QFileDialog.getOpenFileName(
             self, 'open file', '',
             'book (*.txt)')[0]
-        self.library_file_path.append(fname)
-        self.library.append((fname.split("/")[-1]).split('.')[0])
+        self.library.append(fname)
 
     def action_leave_a_review(self):
         pass
@@ -166,5 +170,5 @@ class Buttons(Main, QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = Main()
-    e = Buttons()
+    # e = Buttons()
     sys.exit(app.exec_())
