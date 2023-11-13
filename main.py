@@ -35,17 +35,13 @@ class Buttons(Main):
         self.title = QLabel(self)
         self.title.setFixedSize(150, 20)
         self.title.move(200, 0)
-        self.title.setText("fz")
+        self.title.setText("")
 
         self.text_lable = QTextEdit(self)
         self.text_lable.setFixedSize(500, 480)
         self.text_lable.move(0, 30)
-
-
-        #
-        # self.text_lable.setText("djgkgjk\ndjgkdx")
+        self.text_lable.setText("Select a book from the library")
         self.text_lable.setReadOnly(True)
-        # self.statusBar().showMessage("Указанный файл не существует")
 
         self.show()
 
@@ -130,12 +126,17 @@ class Buttons(Main):
         book_name, ok_pressed = QInputDialog.getItem(
             self, "file", "choose book",
             tuple(self.library), 1, False)
+        print(type(book_name))
 
         if ok_pressed:
             try:
+                self.text_lable.clear()
                 with io.open(book_name, encoding='utf-8') as file:
                     for i in file:
                         self.text_lable.append(i)
+                self.title.setText(book_name.split("/").split(".")[0])
+                print(type(book_name))
+                print(book_name.split("/").split(".")[0])
             except Exception as e:
                 print(e)
 
