@@ -50,7 +50,6 @@ class Buttons(Main):
         action_book_description = QAction("book description", context_menu_three_point)
         action_table_of_contents = QAction("table of contents", context_menu_three_point)
         action_bookmarks = QAction("bookmarks", context_menu_three_point)
-        action_tp_to_the_page = QAction("go to the page", context_menu_three_point)
         action_read = QAction("read", context_menu_three_point)
         action_library = QAction("library", context_menu_three_point)
         action_file_selection = QAction("file selection", context_menu_three_point)
@@ -60,7 +59,6 @@ class Buttons(Main):
         action_book_description.triggered.connect(self.action_book_description)
         action_table_of_contents.triggered.connect(self.action_table_of_contents)
         action_bookmarks.triggered.connect(self.action_bookmarks)
-        action_tp_to_the_page.triggered.connect(self.action_tp_to_the_page)
         action_read.triggered.connect(self.action_read)
         action_library.triggered.connect(self.action_library)
         action_file_selection.triggered.connect(self.action_file_selection)
@@ -70,7 +68,6 @@ class Buttons(Main):
         context_menu_three_point.addAction(action_book_description)
         context_menu_three_point.addAction(action_table_of_contents)
         context_menu_three_point.addAction(action_bookmarks)
-        context_menu_three_point.addAction(action_tp_to_the_page)
         context_menu_three_point.addAction(action_read)
         context_menu_three_point.addAction(action_library)
         context_menu_three_point.addAction(action_file_selection)
@@ -110,7 +107,6 @@ class Buttons(Main):
         pass
 
     def action_table_of_contents(self):
-        # self.three_points.setStyleSheet("background-color: green;")
         pass
 
     def action_bookmarks(self):
@@ -126,7 +122,7 @@ class Buttons(Main):
         book_name, ok_pressed = QInputDialog.getItem(
             self, "file", "choose book",
             tuple(self.library), 1, False)
-        print(type(book_name))
+        # print(type(book_name))
 
         if ok_pressed:
             try:
@@ -141,10 +137,11 @@ class Buttons(Main):
                 print(e)
 
     def action_file_selection(self):
-        fname = QFileDialog.getOpenFileName(
+        self.fname = QFileDialog.getOpenFileName(
             self, 'open file', '',
             'book (*.txt)')[0]
-        self.library.append(fname)
+        self.library.append(self.fname)
+        QMessageBox.about(self, "Title", "the file has been added to the library")
 
     def action_leave_a_review(self):
         pass
@@ -166,6 +163,23 @@ class Buttons(Main):
 
     def update_page(self, a):
         self.text_lable.setText(a)
+
+    def closeEvent(self, evnt):
+        print("close")
+        # evnt.ignore()
+
+        answer = QMessageBox.question(
+            self,
+            'Confirmation',
+            'Do you want to quit?',
+            QMessageBox.StandardButton.Yes |
+            QMessageBox.StandardButton.No
+        )
+        if answer == QMessageBox.StandardButton.Yes:
+            self.close()
+        else:
+            evnt.ignore()
+
 
 
 if __name__ == '__main__':
