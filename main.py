@@ -12,12 +12,32 @@ class Main(QWidget):
         self.resize(500, 500)
         self.setWindowTitle('eBook')
         self.library = list()
-        # self.library_file_path = list()
 
     def initUI(self):
         self.setWindowTitle('eBook')
-        # self.setGeometry(500, 200)
         e = Buttons()
+
+
+class PasswordDialogue(QDialog):
+    def __init__(self):
+        super(PasswordDialogue, self).__init__()
+
+        self.answer = QMessageBox.question(
+            self,
+            'Confirmation',
+            'Do you want to start?',
+            QMessageBox.StandardButton.Yes |
+            QMessageBox.StandardButton.No
+        )
+        self.check_password_settings()
+
+    def check_password_settings(self):
+        if self.answer == QMessageBox.StandardButton.Yes:
+            self.ui = Buttons()
+            self.close()
+        else:
+            sys.exit()
+            # self.ui.show()
 
 
 class Buttons(Main):
@@ -184,6 +204,6 @@ class Buttons(Main):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Main()
+    ex = PasswordDialogue()
     # e = Buttons()
     sys.exit(app.exec_())
