@@ -1,8 +1,10 @@
 import sys
 import io
+import sqlite3
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from PyQt5 import uic
 
 
 class Main(QWidget):
@@ -16,6 +18,72 @@ class Main(QWidget):
     def initUI(self):
         self.setWindowTitle('eBook')
         e = Buttons()
+
+
+class DescriptionDB(QMainWindow):
+    def __init__(self):
+        print(46)
+        super().__init__()
+        uic.loadUi("untitled.ui", self)
+        self.con = sqlite3.connect("ebook.sqlite")
+        self.pushButton.clicked.connect(self.update_result)
+        self.tableWidget.itemChanged.connect(self.item_changed)
+        self.pushButton_2.clicked.connect(self.save_results)
+
+        self.modified = {}
+        self.titles = None
+        print(66)
+
+    def update_result(self):
+        cur = self.con.cursor()
+        if self.spinBox.text() != "0":
+            result = cur.execute("SELECT * FROM description WHERE id=?",
+                                 (item_id := self.spinBox.text(),)).fetchall()
+            self.tableWidget.setRowCount(len(result))
+            # Если запись не нашлась, то не будем ничего делать
+            if not result:
+                self.statusBar().showMessage('Ничего не нашлось')
+                return
+            else:
+                self.statusBar().showMessage(f"Нашлась запись с id = {item_id}")
+            self.tableWidget.setColumnCount(len(result[0]))
+            self.titles = [description[0] for description in cur.description]
+            # Заполнили таблицу полученными элементами
+            for i, elem in enumerate(result):
+                for j, val in enumerate(elem):
+                    self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+            self.modified = {}
+        else:
+            self.cur = self.con.cursor()
+            tab1 = "SELECT * FROM description"
+            try:
+                result = self.cur.execute(tab1).fetchall()
+                self.tableWidget.setRowCount(len(result))
+                self.tableWidget.setColumnCount(len(result[0]))
+                for i, elem in enumerate(result):
+                    for j, val in enumerate(elem):
+                        self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+            except Exception as e:
+                print(e)
+            self.modified = {}
+
+    def item_changed(self, item):
+        # Если значение в ячейке было изменено,
+        # то в словарь записывается пара: название поля, новое значение
+        self.modified[self.titles[item.column()]] = item.text()
+
+    def save_results(self):
+        if self.modified:
+            cur = self.con.cursor()
+            que = "UPDATE description SET\n"
+            que += ", ".join([f"{key}='{self.modified.get(key)}'"
+                              for key in self.modified.keys()])
+            que += "WHERE id = ?"
+            print(que)
+            cur.execute(que, (self.spinBox.text(),))
+
+            self.con.commit()
+            self.modified.clear()
 
 
 class PasswordDialogue(QDialog):
@@ -123,8 +191,12 @@ class Buttons(Main):
             lambda pos: context_menu_settings.exec_(self.settings.mapToGlobal(pos)))
 
     def action_book_description(self):
-
-        pass
+        try:
+            print(1)
+            ex = DescriptionDB()
+            print(2)
+        except Exception as e:
+            print(e)
 
     def action_table_of_contents(self):
         pass
@@ -199,7 +271,6 @@ class Buttons(Main):
             self.close()
         else:
             evnt.ignore()
-
 
 
 if __name__ == '__main__':
