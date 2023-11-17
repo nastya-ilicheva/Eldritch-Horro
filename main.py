@@ -1,10 +1,11 @@
 import sys
 import io
 import sqlite3
+from PyQt5 import uic
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from PyQt5 import uic
+from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
 
 
 class Main(QWidget):
@@ -13,59 +14,81 @@ class Main(QWidget):
         self.initUI()
         self.resize(500, 500)
         self.setWindowTitle('eBook')
-        self.library = list()
+        self.library = []
 
     def initUI(self):
         self.setWindowTitle('eBook')
         e = Buttons()
 
 
-class DescriptionDB(QMainWindow):
+class StartDialogue(QDialog):
     def __init__(self):
-        print(46)
+        super(StartDialogue, self).__init__()
+
+        self.answer = QMessageBox.question(
+            self,
+            'Confirmation',
+            'Do you want to start?',
+            QMessageBox.StandardButton.Yes |
+            QMessageBox.StandardButton.No
+        )
+        self.check_password_settings()
+
+    def check_password_settings(self):
+        if self.answer == QMessageBox.StandardButton.Yes:
+            self.ui = Buttons()
+            self.close()
+        else:
+            sys.exit()
+
+
+class MyWidget(QMainWindow):
+    def __init__(self):
         super().__init__()
         uic.loadUi("untitled.ui", self)
-        self.con = sqlite3.connect("ebook.sqlite")
+        self.con = sqlite3.connect("ebook.db")
         self.pushButton.clicked.connect(self.update_result)
         self.tableWidget.itemChanged.connect(self.item_changed)
         self.pushButton_2.clicked.connect(self.save_results)
 
         self.modified = {}
         self.titles = None
-        print(66)
 
     def update_result(self):
-        cur = self.con.cursor()
-        if self.spinBox.text() != "0":
-            result = cur.execute("SELECT * FROM description WHERE id=?",
-                                 (item_id := self.spinBox.text(),)).fetchall()
-            self.tableWidget.setRowCount(len(result))
-            # Если запись не нашлась, то не будем ничего делать
-            if not result:
-                self.statusBar().showMessage('Ничего не нашлось')
-                return
-            else:
-                self.statusBar().showMessage(f"Нашлась запись с id = {item_id}")
-            self.tableWidget.setColumnCount(len(result[0]))
-            self.titles = [description[0] for description in cur.description]
-            # Заполнили таблицу полученными элементами
-            for i, elem in enumerate(result):
-                for j, val in enumerate(elem):
-                    self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
-            self.modified = {}
-        else:
-            self.cur = self.con.cursor()
-            tab1 = "SELECT * FROM description"
-            try:
-                result = self.cur.execute(tab1).fetchall()
+        try:
+            cur = self.con.cursor()
+            if self.spinBox.text() != "0":
+                result = cur.execute("SELECT * FROM description WHERE id=?",
+                                     (item_id := self.spinBox.text(),)).fetchall()
                 self.tableWidget.setRowCount(len(result))
+                # Если запись не нашлась, то не будем ничего делать
+                if not result:
+                    self.statusBar().showMessage('Ничего не нашлось')
+                    return
+                else:
+                    self.statusBar().showMessage(f"Нашлась запись с id = {item_id}")
                 self.tableWidget.setColumnCount(len(result[0]))
+                self.titles = [description[0] for description in cur.description]
+                # Заполнили таблицу полученными элементами
                 for i, elem in enumerate(result):
                     for j, val in enumerate(elem):
                         self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
-            except Exception as e:
-                print(e)
-            self.modified = {}
+                self.modified = {}
+            else:
+                self.cur = self.con.cursor()
+                tab1 = "SELECT * FROM description"
+                try:
+                    result = self.cur.execute(tab1).fetchall()
+                    self.tableWidget.setRowCount(len(result))
+                    self.tableWidget.setColumnCount(len(result[0]))
+                    for i, elem in enumerate(result):
+                        for j, val in enumerate(elem):
+                            self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+                except Exception as e:
+                    print(e)
+                self.modified = {}
+        except Exception as e:
+            print(e)
 
     def item_changed(self, item):
         # Если значение в ячейке было изменено,
@@ -84,28 +107,6 @@ class DescriptionDB(QMainWindow):
 
             self.con.commit()
             self.modified.clear()
-
-
-class PasswordDialogue(QDialog):
-    def __init__(self):
-        super(PasswordDialogue, self).__init__()
-
-        self.answer = QMessageBox.question(
-            self,
-            'Confirmation',
-            'Do you want to start?',
-            QMessageBox.StandardButton.Yes |
-            QMessageBox.StandardButton.No
-        )
-        self.check_password_settings()
-
-    def check_password_settings(self):
-        if self.answer == QMessageBox.StandardButton.Yes:
-            self.ui = Buttons()
-            self.close()
-        else:
-            sys.exit()
-            # self.ui.show()
 
 
 class Buttons(Main):
@@ -129,6 +130,9 @@ class Buttons(Main):
         self.text_lable.setFixedSize(500, 480)
         self.text_lable.move(0, 30)
         self.text_lable.setText("Select a book from the library")
+        self.f = self.text_lable.font()
+        self.f.setPointSize(14)  # sets the size to 27
+        self.text_lable.setFont(self.f)
         self.text_lable.setReadOnly(True)
 
         self.show()
@@ -191,18 +195,17 @@ class Buttons(Main):
             lambda pos: context_menu_settings.exec_(self.settings.mapToGlobal(pos)))
 
     def action_book_description(self):
-        try:
-            print(1)
-            ex = DescriptionDB()
-            print(2)
-        except Exception as e:
-            print(e)
+        pass
 
     def action_table_of_contents(self):
         pass
 
     def action_bookmarks(self):
-        pass
+        try:
+            self.ex = MyWidget()
+            self.ex.show()
+        except Exception as e:
+            print(e)
 
     def action_tp_to_the_page(self):
         pass
@@ -214,7 +217,8 @@ class Buttons(Main):
         book_name, ok_pressed = QInputDialog.getItem(
             self, "file", "choose book",
             tuple(self.library), 1, False)
-        # print(type(book_name))
+        self.f.setPointSize(10)  # sets the size to 27
+        self.text_lable.setFont(self.f)
 
         if ok_pressed:
             try:
@@ -222,9 +226,6 @@ class Buttons(Main):
                 with io.open(book_name, encoding='utf-8') as file:
                     for i in file:
                         self.text_lable.append(i)
-                self.title.setText(book_name.split("/").split(".")[0])
-                print(type(book_name))
-                print(book_name.split("/").split(".")[0])
             except Exception as e:
                 print(e)
 
@@ -253,13 +254,7 @@ class Buttons(Main):
     def action_about_the_program(self):
         pass
 
-    def update_page(self, a):
-        self.text_lable.setText(a)
-
     def closeEvent(self, evnt):
-        print("close")
-        # evnt.ignore()
-
         answer = QMessageBox.question(
             self,
             'Confirmation',
@@ -275,6 +270,5 @@ class Buttons(Main):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = PasswordDialogue()
-    # e = Buttons()
+    ex = StartDialogue()
     sys.exit(app.exec_())
