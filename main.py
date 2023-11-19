@@ -56,12 +56,11 @@ class BookmarksDB(QMainWindow):
         self.modified = {}
         self.titles = None
 
-
     def update_result(self):
         try:
             cur = self.con.cursor()
             if self.spinBox.text() != "0":
-                result = cur.execute("SELECT * FROM description WHERE id=?",
+                result = cur.execute("SELECT * FROM bookmarks WHERE id=?",
                                      (item_id := self.spinBox.text(),)).fetchall()
                 self.tableWidget.setRowCount(len(result))
                 # Если запись не нашлась, то не будем ничего делать
@@ -79,7 +78,7 @@ class BookmarksDB(QMainWindow):
                 self.modified = {}
             else:
                 self.cur = self.con.cursor()
-                tab1 = "SELECT * FROM description"
+                tab1 = "SELECT * FROM bookmarks"
                 try:
                     self.statusBar().showMessage('')
                     result = self.cur.execute(tab1).fetchall()
@@ -100,46 +99,25 @@ class BookmarksDB(QMainWindow):
         self.modified[self.titles[item.column()]] = item.text()
 
     def delete_elem(self):
-        # Получаем список элементов без повторов и их id
         rows = list(set([i.row() for i in self.tableWidget.selectedItems()]))
         ids = [self.tableWidget.item(i, 0).text() for i in rows]
-        # Спрашиваем у пользователя подтверждение на удаление элементов
         valid = QMessageBox.question(
             self, '', "Действительно удалить элементы с id " + ",".join(ids),
             QMessageBox.Yes, QMessageBox.No)
-        # Если пользователь ответил утвердительно, удаляем элементы.
-        # Не забываем зафиксировать изменения
         if valid == QMessageBox.Yes:
             cur = self.con.cursor()
-            cur.execute("DELETE FROM description WHERE id IN (" + ", ".join(
+            cur.execute("DELETE FROM bookmarks WHERE id IN (" + ", ".join(
                 '?' * len(ids)) + ")", ids)
             self.con.commit()
 
     def append_elem(self):
-        self.ex = AppendDialog()
-        self.ex.show()
-
-        # self.ok_pressed.clicked.connect(self.hello)
-
-        # def hello(self):
-        print(1)
-        # try:
-        #     t = self.trick_button.text()
-        #     if t == "->":
-        #         self.trick_button.setText('<-')
-        #         self.second_value.setText(self.first_value.text())
-        #         self.first_value.setText("")
-        #     else:
-        #         self.trick_button.setText('->')
-        #         self.first_value.setText(self.second_value.text())
-        #         self.second_value.setText("")
-        # except Exception as e:
-        #     print(e)
+        self.x = AppendDialog()
+        self.x.show()
 
     def save_results(self):
         if self.modified:
             cur = self.con.cursor()
-            que = "UPDATE description SET\n"
+            que = "UPDATE bookmarks SET\n"
             que += ", ".join([f"{key}='{self.modified.get(key)}'"
                               for key in self.modified.keys()])
             que += "WHERE id = ?"
@@ -151,11 +129,32 @@ class BookmarksDB(QMainWindow):
 
 
 class AppendDialog(QWidget):
-    def initUI(self):
+    def __init__(self):
         super().__init__()
         uic.loadUi("append.ui", self)
-        # self.show()
+        self.con = sqlite3.connect("ebook.db")
+        self.ok_pressed.clicked.connect(self.remember_result)
+        self.cancel_pressed.clicked.connect(self.closes)
+        self.modified = {}
+        self.titles = None
 
+    def remember_result(self):
+        try:
+            self.autor = self.author.text()
+            self.book_name = self.author.text()
+            self.bookmarks = self.bookmarks.text()
+
+            cur = self.con.cursor()
+            cur.execute(f"INSERT INTO bookmarks(author, book_name, bookmarks)"
+                        f"VALUES('{self.autor}', '{self.book_name}', '{self.bookmarks}')")
+            self.con.commit()
+
+        except Exception as e:
+            print(e)
+        self.close()
+
+    def closes(self):
+        self.close()
 
 
 class Buttons(Main):
@@ -196,7 +195,6 @@ class Buttons(Main):
         action_file_selection = QAction("file selection", context_menu_three_point)
         action_leave_a_review = QAction("leve a review", context_menu_three_point)
 
-        # Присоединяем действия к соответствующим функциям
         action_book_description.triggered.connect(self.action_book_description)
         action_table_of_contents.triggered.connect(self.action_table_of_contents)
         action_bookmarks.triggered.connect(self.action_bookmarks)
@@ -205,7 +203,6 @@ class Buttons(Main):
         action_file_selection.triggered.connect(self.action_file_selection)
         action_leave_a_review.triggered.connect(self.action_leave_a_review)
 
-        # Добавляем пункты меню к контекстному меню
         context_menu_three_point.addAction(action_book_description)
         context_menu_three_point.addAction(action_table_of_contents)
         context_menu_three_point.addAction(action_bookmarks)
@@ -214,7 +211,6 @@ class Buttons(Main):
         context_menu_three_point.addAction(action_file_selection)
         context_menu_three_point.addAction(action_leave_a_review)
 
-        # Прикрепляем контекстное меню к кнопке
         self.three_points.setContextMenuPolicy(3)  # 3 - Qt.CustomContextMenu
         self.three_points.customContextMenuRequested.connect(
             lambda pos: context_menu_three_point.exec_(self.three_points.mapToGlobal(pos)))
