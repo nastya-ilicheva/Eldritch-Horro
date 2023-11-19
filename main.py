@@ -42,7 +42,7 @@ class StartDialogue(QDialog):
             sys.exit()
 
 
-class MyWidget(QMainWindow):
+class BookmarksDB(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi("untitled.ui", self)
@@ -50,9 +50,12 @@ class MyWidget(QMainWindow):
         self.pushButton.clicked.connect(self.update_result)
         self.tableWidget.itemChanged.connect(self.item_changed)
         self.pushButton_2.clicked.connect(self.save_results)
+        self.pushButton_3.clicked.connect(self.append_elem)
+        self.pushButton_4.clicked.connect(self.delete_elem)
 
         self.modified = {}
         self.titles = None
+
 
     def update_result(self):
         try:
@@ -78,6 +81,7 @@ class MyWidget(QMainWindow):
                 self.cur = self.con.cursor()
                 tab1 = "SELECT * FROM description"
                 try:
+                    self.statusBar().showMessage('')
                     result = self.cur.execute(tab1).fetchall()
                     self.tableWidget.setRowCount(len(result))
                     self.tableWidget.setColumnCount(len(result[0]))
@@ -95,6 +99,43 @@ class MyWidget(QMainWindow):
         # то в словарь записывается пара: название поля, новое значение
         self.modified[self.titles[item.column()]] = item.text()
 
+    def delete_elem(self):
+        # Получаем список элементов без повторов и их id
+        rows = list(set([i.row() for i in self.tableWidget.selectedItems()]))
+        ids = [self.tableWidget.item(i, 0).text() for i in rows]
+        # Спрашиваем у пользователя подтверждение на удаление элементов
+        valid = QMessageBox.question(
+            self, '', "Действительно удалить элементы с id " + ",".join(ids),
+            QMessageBox.Yes, QMessageBox.No)
+        # Если пользователь ответил утвердительно, удаляем элементы.
+        # Не забываем зафиксировать изменения
+        if valid == QMessageBox.Yes:
+            cur = self.con.cursor()
+            cur.execute("DELETE FROM description WHERE id IN (" + ", ".join(
+                '?' * len(ids)) + ")", ids)
+            self.con.commit()
+
+    def append_elem(self):
+        self.ex = AppendDialog()
+        self.ex.show()
+
+        # self.ok_pressed.clicked.connect(self.hello)
+
+        # def hello(self):
+        print(1)
+        # try:
+        #     t = self.trick_button.text()
+        #     if t == "->":
+        #         self.trick_button.setText('<-')
+        #         self.second_value.setText(self.first_value.text())
+        #         self.first_value.setText("")
+        #     else:
+        #         self.trick_button.setText('->')
+        #         self.first_value.setText(self.second_value.text())
+        #         self.second_value.setText("")
+        # except Exception as e:
+        #     print(e)
+
     def save_results(self):
         if self.modified:
             cur = self.con.cursor()
@@ -107,6 +148,14 @@ class MyWidget(QMainWindow):
 
             self.con.commit()
             self.modified.clear()
+
+
+class AppendDialog(QWidget):
+    def initUI(self):
+        super().__init__()
+        uic.loadUi("append.ui", self)
+        # self.show()
+
 
 
 class Buttons(Main):
@@ -202,7 +251,7 @@ class Buttons(Main):
 
     def action_bookmarks(self):
         try:
-            self.ex = MyWidget()
+            self.ex = BookmarksDB()
             self.ex.show()
         except Exception as e:
             print(e)
