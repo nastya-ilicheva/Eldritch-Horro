@@ -112,7 +112,6 @@ class BookmarksDB(QMainWindow):
     def append_elem(self):
         self.x = AppendBookmarks()
         self.x.show()
-
     def save_results(self):
         if self.modified:
             cur = self.con.cursor()
@@ -146,7 +145,6 @@ class AppendBookmarks(QWidget):
             cur.execute(f"INSERT INTO bookmarks(author, book_name, bookmarks)"
                         f"VALUES('{self.autor}', '{self.book_name}', '{self.bookmarks}')")
             self.con.commit()
-
         except Exception as e:
             print(e)
         self.close()
@@ -329,7 +327,7 @@ class Buttons(Main):
 
         # создаем контекстное меню для настроек
         context_menu_settings = QMenu(self.settings)
-        action_font_size = QAction("шрифт", context_menu_settings)
+        action_font_size = QAction("размер шрифта", context_menu_settings)
         action_help = QAction("помощь", context_menu_settings)
         action_color = QAction("цвет", context_menu_settings)
         action_font = QAction("редактировать отображение текста", context_menu_settings)
@@ -352,8 +350,11 @@ class Buttons(Main):
             lambda pos: context_menu_settings.exec_(self.settings.mapToGlobal(pos)))
 
     def action_book_description(self):
-        self.ex = DescriptionDB()
-        self.ex.show()
+        try:
+            self.ex = DescriptionDB()
+            self.ex.show()
+        except Exception as e:
+            print(e)
 
     def action_table_of_contents(self):
         QMessageBox.about(self, "Оглавление", "Эта фукнция пока не реализована)")

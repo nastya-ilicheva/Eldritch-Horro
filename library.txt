@@ -1,2 +1,4 @@
-C:/Users/пїЅпїЅпїЅпїЅпїЅ/PycharmProjects/eBook/пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅ) - royallib.com.txt
-C:/Users/пїЅпїЅпїЅпїЅпїЅ/PycharmProjects/eBook/пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ.txt
+
+C:/Users/Ilicheva/PycharmProjects/eBook/ночной дозор.txt
+C:/Users/Ilicheva/PycharmProjects/eBook/отцы и дети.txt
+C:/Users/Ilicheva/PycharmProjects/eBook/отцы и дети.txt
