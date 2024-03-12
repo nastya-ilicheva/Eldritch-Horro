@@ -2,3 +2,4 @@
 C:/Users/Ilicheva/PycharmProjects/eBook/םמקםמי המחמנ.txt
 C:/Users/Ilicheva/PycharmProjects/eBook/מעצû ט הועט.txt
 C:/Users/Ilicheva/PycharmProjects/eBook/מעצû ט הועט.txt
+C:/Users/Ilicheva/PycharmProjects/eBook/books/מעצû ט הועט.txt

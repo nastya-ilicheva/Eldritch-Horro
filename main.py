@@ -45,7 +45,7 @@ class BookmarksDB(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi("bookmarks.ui", self)
-        self.con = sqlite3.connect("ebook.db")
+        self.con = sqlite3.connect("system_files/ebook.db")
         self.pushButton.clicked.connect(self.update_result)
         self.tableWidget.itemChanged.connect(self.item_changed)
         self.pushButton_2.clicked.connect(self.save_results)
@@ -129,7 +129,7 @@ class AppendBookmarks(QWidget):
     def __init__(self):
         super().__init__()
         uic.loadUi("append_bookmarks.ui", self)
-        self.con = sqlite3.connect("ebook.db")
+        self.con = sqlite3.connect("system_files/ebook.db")
         self.ok_pressed.clicked.connect(self.remember_result)
         self.cancel_pressed.clicked.connect(self.closes)
         self.modified = {}
@@ -157,7 +157,7 @@ class DescriptionDB(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi("description.ui", self)
-        self.con = sqlite3.connect("ebook.db")
+        self.con = sqlite3.connect("system_files/ebook.db")
         self.pushButton.clicked.connect(self.update_result)
         self.tableWidget.itemChanged.connect(self.item_changed)
         self.pushButton_2.clicked.connect(self.save_results)
@@ -242,7 +242,7 @@ class AppendDescription(QWidget):
     def __init__(self):
         super().__init__()
         uic.loadUi("append_description.ui", self)
-        self.con = sqlite3.connect("ebook.db")
+        self.con = sqlite3.connect("system_files/ebook.db")
         self.ok_pressed.clicked.connect(self.remember_result)
         self.cancel_pressed.clicked.connect(self.closes)
         self.modified = {}
@@ -270,12 +270,12 @@ class AppendDescription(QWidget):
 class Buttons(Main):
     def initUI(self):
         self.settings = QPushButton(self)
-        self.settings.setIcon(QIcon('settings.png'))
+        self.settings.setIcon(QIcon('system_files/settings.png'))
         self.settings.setIconSize(QSize(20, 20))
         self.settings.move(468, 0)
 
         self.three_points = QPushButton(self)
-        self.three_points.setIcon(QIcon('three_points.png'))
+        self.three_points.setIcon(QIcon('system_files/three_points.png'))
         self.three_points.setIconSize(QSize(20, 20))
         self.three_points.move(0, 0)
 
@@ -367,7 +367,7 @@ class Buttons(Main):
         QMessageBox.about(self, "Аудиокнига", "Эта фукнция пока не реализована)")
 
     def action_library(self):
-        f = open("library.txt", 'r')
+        f = open("system_files/library.txt", 'r')
         library = f.readlines()
         f.close()
 
@@ -396,7 +396,7 @@ class Buttons(Main):
             'book (*.txt)')[0]
         # self.library.append(self.fname)
 
-        f = open("library.txt", 'a')
+        f = open("system_files/library.txt", 'a')
         print(f.write(f"{self.fname}\n"))
         f.close()
 
