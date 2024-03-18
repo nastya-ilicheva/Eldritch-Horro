@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
+from bookmarks_db import *
 
 
 class Main(QWidget):
@@ -43,7 +44,6 @@ class Main(QWidget):
 
         # Создаем контекстное меню для 3точки
         context_menu_three_point = QMenu(self.three_points)
-        action_book_description = QAction("описание книг", context_menu_three_point)
         action_table_of_contents = QAction("оглавление", context_menu_three_point)
         action_bookmarks = QAction("заметки", context_menu_three_point)
         action_read = QAction("аудиокнига", context_menu_three_point)
@@ -51,7 +51,6 @@ class Main(QWidget):
         action_file_selection = QAction("добавление файла", context_menu_three_point)
         action_leave_a_review = QAction("оставить отзыв", context_menu_three_point)
 
-        action_book_description.triggered.connect(self.action_book_description)
         action_table_of_contents.triggered.connect(self.action_table_of_contents)
         action_bookmarks.triggered.connect(self.action_bookmarks)
         action_read.triggered.connect(self.action_read)
@@ -59,7 +58,6 @@ class Main(QWidget):
         action_file_selection.triggered.connect(self.action_file_selection)
         action_leave_a_review.triggered.connect(self.action_leave_a_review)
 
-        context_menu_three_point.addAction(action_book_description)
         context_menu_three_point.addAction(action_table_of_contents)
         context_menu_three_point.addAction(action_bookmarks)
         context_menu_three_point.addAction(action_read)
@@ -94,13 +92,6 @@ class Main(QWidget):
         self.settings.setContextMenuPolicy(3)  # 3 - Qt.CustomContextMenu
         self.settings.customContextMenuRequested.connect(
             lambda pos: context_menu_settings.exec_(self.settings.mapToGlobal(pos)))
-
-    def action_book_description(self):
-        try:
-            self.ex = DescriptionDB()
-            self.ex.show()
-        except Exception as e:
-            print(e)
 
     def action_table_of_contents(self):
         QMessageBox.about(self, "Оглавление", "Эта фукнция пока не реализована)")
