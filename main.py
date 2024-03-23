@@ -9,36 +9,56 @@ from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
 from bookmarks_db import *
 
 
-class Main(QWidget):
+class Main(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()
         self.resize(500, 500)
         self.setWindowTitle('eBook')
+
+        # self.setCentralWidget(self.text_lable)
+        # self.resizeEvent = self.customResizeEvent
+
+    def customResizeEvent(self, event):
+        self.text_edit.setGeometry(0, self.settings.height() + self.three_points.height() + self.title.height(),
+                                   event.size().width(),
+                                   event.size().height() - self.settings.height() - self.three_points.height() - self.title.height())
+
     def initUI(self):
         self.settings = QPushButton(self)
+        self.three_points = QPushButton(self)
+        self.title = QLabel(self)
+        self.text_lable = QTextEdit(self)
+
         self.settings.setIcon(QIcon('system_files/settings.png'))
         self.settings.setIconSize(QSize(20, 20))
         self.settings.move(468, 0)
 
-        self.three_points = QPushButton(self)
         self.three_points.setIcon(QIcon('system_files/three_points.png'))
         self.three_points.setIconSize(QSize(20, 20))
         self.three_points.move(0, 0)
 
-        self.title = QLabel(self)
         self.title.setFixedSize(460, 20)
         self.title.move(40, 0)
         self.title.setText("")
 
-        self.text_lable = QTextEdit(self)
-        self.text_lable.setFixedSize(500, 480)
-        self.text_lable.move(0, 30)
-        self.text_lable.setText("Выберите книгу из библиотеки")
-        self.f = self.text_lable.font()
-        self.f.setPointSize(14)  # sets the size to 27
-        self.text_lable.setFont(self.f)
-        self.text_lable.setReadOnly(True)
+        # self.text_lable.setFixedSize(500, 480)
+        # self.text_lable.move(0, 30)
+        # self.text_lable.setText("Выберите книгу из библиотеки")
+        # self.f = self.text_lable.font()
+        # self.f.setPointSize(14)  # sets the size to 27
+        # self.text_lable.setFont(self.f)
+        # self.text_lable.setReadOnly(True)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.settings)
+        layout.addWidget(self.three_points)
+        layout.addWidget(self.title)
+        layout.addWidget(self.text_lable)
+
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
 
         self.show()
 
@@ -49,21 +69,18 @@ class Main(QWidget):
         action_read = QAction("аудиокнига", context_menu_three_point)
         action_library = QAction("библиотека", context_menu_three_point)
         action_file_selection = QAction("добавление файла", context_menu_three_point)
-        action_leave_a_review = QAction("оставить отзыв", context_menu_three_point)
 
         action_table_of_contents.triggered.connect(self.action_table_of_contents)
         action_bookmarks.triggered.connect(self.action_bookmarks)
         action_read.triggered.connect(self.action_read)
         action_library.triggered.connect(self.action_library)
         action_file_selection.triggered.connect(self.action_file_selection)
-        action_leave_a_review.triggered.connect(self.action_leave_a_review)
 
         context_menu_three_point.addAction(action_table_of_contents)
         context_menu_three_point.addAction(action_bookmarks)
         context_menu_three_point.addAction(action_read)
         context_menu_three_point.addAction(action_library)
         context_menu_three_point.addAction(action_file_selection)
-        context_menu_three_point.addAction(action_leave_a_review)
 
         self.three_points.setContextMenuPolicy(3)  # 3 - Qt.CustomContextMenu
         self.three_points.customContextMenuRequested.connect(
@@ -139,10 +156,6 @@ class Main(QWidget):
 
         QMessageBox.about(self, "Title", "Файл добавлен в библиотеку")
 
-    def action_leave_a_review(self):
-        QMessageBox.about(self, "Отзыв", "Можете написать отзыв в телеграмм в личные сообщения. "
-                                         "Мой профиль: https://t.me/nastya_ilyicheva")
-
     def action_font_size(self):
         try:
             size, ok_pressed = QInputDialog.getInt(
@@ -181,18 +194,8 @@ class Main(QWidget):
                                          "кнопками и названием, читаемой книги,есть возможность подстроить интерфейс "
                                          "подстроить под себя.")
 
-    def closeEvent(self, evnt):
-        answer = QMessageBox.question(
-            self,
-            'Confirmation',
-            'Закрыть программу?',
-            QMessageBox.StandardButton.Yes |
-            QMessageBox.StandardButton.No
-        )
-        if answer == QMessageBox.StandardButton.Yes:
-            self.close()
-        else:
-            evnt.ignore()
+    def closeEvent(self):
+        self.close()
 
 
 if __name__ == '__main__':
