@@ -19,10 +19,10 @@ class Main(QMainWindow):
         # self.setCentralWidget(self.text_lable)
         # self.resizeEvent = self.customResizeEvent
 
-    def customResizeEvent(self, event):
-        self.text_edit.setGeometry(0, self.settings.height() + self.three_points.height() + self.title.height(),
-                                   event.size().width(),
-                                   event.size().height() - self.settings.height() - self.three_points.height() - self.title.height())
+    def resizeEvent(self, event):
+        self.text_lable.setGeometry(0, sum([b.height() for b in [self.settings, self.three_points, self.title]]),
+                                   event.size().width(), event.size().height() - sum(
+                [b.height() for b in [self.settings, self.three_points, self.title]]))
 
     def initUI(self):
         self.settings = QPushButton(self)
@@ -44,16 +44,19 @@ class Main(QMainWindow):
 
         # self.text_lable.setFixedSize(500, 480)
         # self.text_lable.move(0, 30)
-        # self.text_lable.setText("Выберите книгу из библиотеки")
-        # self.f = self.text_lable.font()
-        # self.f.setPointSize(14)  # sets the size to 27
-        # self.text_lable.setFont(self.f)
-        # self.text_lable.setReadOnly(True)
+        self.text_lable.setText("Выберите книгу из библиотеки")
+        self.f = self.text_lable.font()
+        self.f.setPointSize(14)  # sets the size to 27
+        self.text_lable.setFont(self.f)
+        self.text_lable.setReadOnly(True)
+
+        layout_cap = QVBoxLayout()
+        layout_cap.addWidget(self.settings)
+        layout_cap.addWidget(self.three_points)
+        layout_cap.addWidget(self.title)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.settings)
-        layout.addWidget(self.three_points)
-        layout.addWidget(self.title)
+        layout.addLayout(layout_cap)
         layout.addWidget(self.text_lable)
 
         central_widget = QWidget()
