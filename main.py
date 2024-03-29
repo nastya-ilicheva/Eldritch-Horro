@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
-from bookmarks_db import *
+# from bookmarks_db import *
 
 
 class Main(QMainWindow):
@@ -20,19 +20,19 @@ class Main(QMainWindow):
         # self.resizeEvent = self.customResizeEvent
 
     def resizeEvent(self, event):
-        self.text_lable.setGeometry(0, sum([b.height() for b in [self.settings, self.three_points, self.title]]),
+        self.text_lable.setGeometry(0, sum([b.height() for b in [self.three_points, self.title]]),
                                    event.size().width(), event.size().height() - sum(
-                [b.height() for b in [self.settings, self.three_points, self.title]]))
+                [b.height() for b in [self.three_points, self.title]]))
 
     def initUI(self):
-        self.settings = QPushButton(self)
+        # self.settings = QPushButton(self)
         self.three_points = QPushButton(self)
         self.title = QLabel(self)
         self.text_lable = QTextEdit(self)
 
-        self.settings.setIcon(QIcon('system_files/settings.png'))
-        self.settings.setIconSize(QSize(20, 20))
-        self.settings.move(468, 0)
+        # self.settings.setIcon(QIcon('system_files/settings.png'))
+        # self.settings.setIconSize(QSize(20, 20))
+        # self.settings.move(468, 0)
 
         self.three_points.setIcon(QIcon('system_files/three_points.png'))
         self.three_points.setIconSize(QSize(20, 20))
@@ -51,7 +51,7 @@ class Main(QMainWindow):
         self.text_lable.setReadOnly(True)
 
         layout_cap = QVBoxLayout()
-        layout_cap.addWidget(self.settings)
+        # layout_cap.addWidget(self.settings)
         layout_cap.addWidget(self.three_points)
         layout_cap.addWidget(self.title)
 
@@ -73,29 +73,17 @@ class Main(QMainWindow):
         action_library = QAction("библиотека", context_menu_three_point)
         action_file_selection = QAction("добавление файла", context_menu_three_point)
 
+        action_font_size = QAction("размер шрифта", context_menu_three_point)
+        action_help = QAction("помощь", context_menu_three_point)
+        action_color = QAction("цвет", context_menu_three_point)
+        action_font = QAction("редактировать отображение текста", context_menu_three_point)
+        action_about_the_program = QAction("о программе", context_menu_three_point)
+
         action_table_of_contents.triggered.connect(self.action_table_of_contents)
         action_bookmarks.triggered.connect(self.action_bookmarks)
         action_read.triggered.connect(self.action_read)
         action_library.triggered.connect(self.action_library)
         action_file_selection.triggered.connect(self.action_file_selection)
-
-        context_menu_three_point.addAction(action_table_of_contents)
-        context_menu_three_point.addAction(action_bookmarks)
-        context_menu_three_point.addAction(action_read)
-        context_menu_three_point.addAction(action_library)
-        context_menu_three_point.addAction(action_file_selection)
-
-        self.three_points.setContextMenuPolicy(3)  # 3 - Qt.CustomContextMenu
-        self.three_points.customContextMenuRequested.connect(
-            lambda pos: context_menu_three_point.exec_(self.three_points.mapToGlobal(pos)))
-
-        # создаем контекстное меню для настроек
-        context_menu_settings = QMenu(self.settings)
-        action_font_size = QAction("размер шрифта", context_menu_settings)
-        action_help = QAction("помощь", context_menu_settings)
-        action_color = QAction("цвет", context_menu_settings)
-        action_font = QAction("редактировать отображение текста", context_menu_settings)
-        action_about_the_program = QAction("о программе", context_menu_settings)
 
         action_font_size.triggered.connect(self.action_font_size)
         action_help.triggered.connect(self.action_help)
@@ -103,15 +91,45 @@ class Main(QMainWindow):
         action_color.triggered.connect(self.action_color)
         action_about_the_program.triggered.connect(self.action_about_the_program)
 
-        context_menu_settings.addAction(action_font_size)
-        context_menu_settings.addAction(action_help)
-        context_menu_settings.addAction(action_font)
-        context_menu_settings.addAction(action_color)
-        context_menu_settings.addAction(action_about_the_program)
+        context_menu_three_point.addAction(action_table_of_contents)
+        context_menu_three_point.addAction(action_bookmarks)
+        context_menu_three_point.addAction(action_read)
+        context_menu_three_point.addAction(action_library)
+        context_menu_three_point.addAction(action_file_selection)
 
-        self.settings.setContextMenuPolicy(3)  # 3 - Qt.CustomContextMenu
-        self.settings.customContextMenuRequested.connect(
-            lambda pos: context_menu_settings.exec_(self.settings.mapToGlobal(pos)))
+        context_menu_three_point.addAction(action_font_size)
+        context_menu_three_point.addAction(action_help)
+        context_menu_three_point.addAction(action_font)
+        context_menu_three_point.addAction(action_color)
+        context_menu_three_point.addAction(action_about_the_program)
+
+        self.three_points.setContextMenuPolicy(3)  # 3 - Qt.CustomContextMenu
+        self.three_points.customContextMenuRequested.connect(
+            lambda pos: context_menu_three_point.exec_(self.three_points.mapToGlobal(pos)))
+
+        # создаем контекстное меню для настроек
+        # context_menu_settings = QMenu(self.settings)
+        # action_font_size = QAction("размер шрифта", context_menu_settings)
+        # action_help = QAction("помощь", context_menu_settings)
+        # action_color = QAction("цвет", context_menu_settings)
+        # action_font = QAction("редактировать отображение текста", context_menu_settings)
+        # action_about_the_program = QAction("о программе", context_menu_settings)
+
+        # action_font_size.triggered.connect(self.action_font_size)
+        # action_help.triggered.connect(self.action_help)
+        # action_font.triggered.connect(self.action_font)
+        # action_color.triggered.connect(self.action_color)
+        # action_about_the_program.triggered.connect(self.action_about_the_program)
+
+        # context_menu_settings.addAction(action_font_size)
+        # context_menu_settings.addAction(action_help)
+        # context_menu_settings.addAction(action_font)
+        # context_menu_settings.addAction(action_color)
+        # context_menu_settings.addAction(action_about_the_program)
+
+        # self.settings.setContextMenuPolicy(3)  # 3 - Qt.CustomContextMenu
+        # self.settings.customContextMenuRequested.connect(
+        #     lambda pos: context_menu_settings.exec_(self.settings.mapToGlobal(pos)))
 
     def action_table_of_contents(self):
         QMessageBox.about(self, "Оглавление", "Эта фукнция пока не реализована)")
