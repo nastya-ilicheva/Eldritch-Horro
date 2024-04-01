@@ -25,16 +25,17 @@ class BookmarksDB(QMainWindow):
     def update_result(self):
         try:
             cur = self.con.cursor()
-            if self.spinBox.text() != "0":
-                result = cur.execute("SELECT * FROM bookmarks WHERE id=?",
-                                     (item_id := self.spinBox.text(),)).fetchall()
+            if self.QTextEdit.toPlainText() != "":
+                result = cur.execute(f"SELECT * FROM bookmarks WHERE author LIKE '%{self.QTextEdit.toPlainText()}%' "
+                                     f"OR book_name LIKE '%{self.QTextEdit.toPlainText()}%' OR bookmarks LIKE "
+                                     f"'%{self.QTextEdit.toPlainText()}%';").fetchall()
                 self.tableWidget.setRowCount(len(result))
                 # Если запись не нашлась, то не будем ничего делать
                 if not result:
                     self.statusBar().showMessage('Ничего не нашлось')
                     return
                 else:
-                    self.statusBar().showMessage(f"Нашлась запись с id = {item_id}")
+                    self.statusBar().showMessage(f"Нашлось несколько записей для вас.")
                 self.tableWidget.setColumnCount(len(result[0]))
                 self.titles = [description[0] for description in cur.description]
                 # Заполнили таблицу полученными элементами
