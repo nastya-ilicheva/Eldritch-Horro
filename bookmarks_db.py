@@ -80,6 +80,7 @@ class BookmarksDB(QMainWindow):
     def append_elem(self):
         self.x = AppendBookmarks()
         self.x.show()
+
     def save_results(self):
         if self.modified:
             cur = self.con.cursor()

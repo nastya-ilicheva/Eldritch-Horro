@@ -1,6 +1,1 @@
 
-C:/Users/Ilicheva/PycharmProjects/eBook/ночной дозор.txt
-C:/Users/Ilicheva/PycharmProjects/eBook/отцы и дети.txt
-C:/Users/Ilicheva/PycharmProjects/eBook/отцы и дети.txt
-C:/Users/Ilicheva/PycharmProjects/eBook/books/отцы и дети.txt
-C:/Users/Настя/PycharmProjects/eBook/books/ночной дозор.txt
