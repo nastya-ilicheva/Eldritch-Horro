@@ -2,6 +2,8 @@ from bookmarks_db import *
 
 
 class Main(QMainWindow):
+    global book_name
+
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -12,6 +14,8 @@ class Main(QMainWindow):
         self.text_lable.setGeometry(0, sum([b.height() for b in [self.three_points, self.title]]),
                                     event.size().width(), event.size().height() - sum(
                 [b.height() for b in [self.three_points, self.title]]))
+        self.title.setText(book_name.split("/")[-1][:-5])
+        # print(book_name)
 
     def initUI(self):
         self.three_points = QPushButton(self)
@@ -92,20 +96,22 @@ class Main(QMainWindow):
         library = f.readlines()
         f.close()
 
-        book_name, ok_pressed = QInputDialog.getItem(
+        book_na, ok_pressed = QInputDialog.getItem(
             self, "file", "choose book",
             tuple(library), 1, False)
 
-        self.boasasoa = book_name  # без него не рабоатет
+        self.boasasoa = book_na  # без него не рабоатет
 
         self.f.setPointSize(10)
         self.text_lable.setFont(self.f)
-        self.title.setText(book_name[:-1])
+        # self.title.setText(book_name[:-1])
+        book_name = book_na.split("/")[-1][:-5]
+        self.title.setText(book_name)
 
         if ok_pressed:
             try:
                 self.text_lable.clear()
-                with io.open(book_name[:-1], encoding='utf-8') as file:
+                with io.open(book_na[:-1], encoding='utf-8') as file:
                     for i in file:
                         self.text_lable.append(i)
             except Exception as e:
@@ -173,6 +179,8 @@ class Main(QMainWindow):
         else:
             evnt.ignore()
 
+
+book_name = ""
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
